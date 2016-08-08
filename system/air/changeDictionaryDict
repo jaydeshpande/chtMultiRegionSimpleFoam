@@ -1,0 +1,226 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    boundary
+    {
+        air_top
+        {
+            type            symmetryPlane;
+        }
+        empty1
+        {
+            type            empty;
+        }
+    }
+
+    U
+    {
+        internalField   uniform (0.1 0 0);
+
+        boundaryField
+        {
+            airinlet
+            {
+                type            fixedValue;
+                value           uniform ( 0.1 0 0 );
+            }
+
+            airoutlet
+            {
+                type            inletOutlet;
+                inletValue      uniform ( 0 0 0 );
+                value           uniform ( 0.1 0 0 );
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            "air_top_to_.*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+
+        }
+    }
+
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            airinlet
+            {
+                type            fixedValue;
+                value           uniform 300;
+            }
+
+            airoutlet
+            {
+                type            zeroGradient;
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            "air_top_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffleMixed;
+                Tnbr            T;
+                kappa           fluidThermo;
+                kappaName       none;
+                value           uniform 300;
+            }
+
+        }
+    }
+
+    epsilon
+    {
+        internalField   uniform 0.01;
+
+        boundaryField
+        {
+            airinlet
+            {
+                type            inletOutlet;
+                inletValue      uniform 0.01;
+                value           uniform 0.01;
+            }
+
+            airoutlet
+            {
+                type            fixedValue;
+                value           uniform 0.01;
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            "air_top_to_.*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+
+        }
+    }
+
+    k
+    {
+        internalField   uniform 0.1;
+
+        boundaryField
+        {
+            airinlet
+            {
+                type            inletOutlet;
+                inletValue      uniform 0.1;
+                value           uniform 0.1;
+            }
+
+            airoutlet
+            {
+                type            fixedValue;
+                value           uniform 0.1;
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            "air_top_to_.*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.1;
+            }
+
+        }
+    }
+
+    p_rgh
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            fixedFluxPressure;
+                value           uniform 1e5;
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            airinlet
+            {
+                type            fixedValue;
+                value           uniform 1e5;
+            }
+            empty1
+            {
+                type            empty;
+            }
+
+
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
+            }
+
+            air_top
+            {
+                type            symmetryPlane;
+            }
+
+            airinlet
+            {
+                type            calculated;
+                value           uniform 1e5;
+            }
+
+            empty1
+            {
+                type            empty;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //

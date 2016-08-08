@@ -1,0 +1,26 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+
+# Setup case
+./Allrun.pre
+
+
+#-- Run on single processor
+sed -i 's/physicalType    patch;/ /g' constant/air/polyMesh/boundary
+sed -i 's/physicalType    patch;/ /g' constant/solid/polyMesh/boundary
+sed -i 's/type            zeroGradient;/type            empty;/g' 0/solid/T
+sed -i 's/type            calculated;/type            fixedValue;/g' 0/air/U
+
+runApplication $(getApplication)
+
+#echo
+#echo "creating files for paraview post-processing"
+#echo
+#paraFoam -touchAll
+
+# ----------------------------------------------------------------- end-of-file
